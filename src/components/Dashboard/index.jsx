@@ -8,24 +8,22 @@ export default class Dashboard extends React.Component {
     super(props);
     this.state = {
       showModal: false,
+      description: "",
+      title: "",
+      listidx: null,
+      cardidx: null,
       payload: [
         {
           "list-name": "All",
-
           "card": []
         },
         {
           "list-name": "To-Do",
-
           "card": []
         },
         {
           "list-name": "Doing",
-          "card": [{
-            "title": "In my mind",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          }]
+          "card": []
         },
         {
           "list-name": "Done",
@@ -36,17 +34,16 @@ export default class Dashboard extends React.Component {
   }
 
   addTask = async (e) => {
-    let idx = await this.state.idx;
+    let idx = await this.state.listidx;
     let data = {
-      "number": this.state.payload[idx].card.length + 1,
       "title": this.state.title,
-      "date": new Date().toJSON().slice(0,10).replace(/-/g,'/'),
+      "date": new Date().toJSON().slice(0, 10).replace(/-/g, '/'),
       "description": this.state.description
     }
-    let d = await this.state.payload;
-    d[idx].card.push(data);
+    let payload = await this.state.payload;
+    payload[idx].card.push(data);
     this.setState({
-      payload : d,
+      payload,
       showModal: false
     })
   }
@@ -59,13 +56,39 @@ export default class Dashboard extends React.Component {
     })
   }
 
-  showModal = (idx, e) => {
+  editTask = async () => {
+    let data = await this.state.payload;
+    data[this.state.listidx].card[this.state.cardidx].title = this.state.title;
+    data[this.state.listidx].card[this.state.cardidx].description = this.state.description;
+
     this.setState({
-      showModal : true,
-      idx
+      payload: data,
+      showModal: false
     })
   }
-  
+
+  showModal = (listidx, taskidx) => {
+    if(isNaN(taskidx)){
+      this.setState({
+        title: "",
+        description: "",
+        showModal: true,
+        listidx: listidx,
+        istaskEdit : false,
+      })
+    } else {
+      this.setState({
+        title: this.state.payload[listidx].card[taskidx].title,
+        description: this.state.payload[listidx].card[taskidx].description,
+        showModal: true,
+        listidx : listidx,
+        cardidx: taskidx,
+        istaskEdit : true,
+      })
+    }
+
+  }
+
 
   render() {
     return (
@@ -74,16 +97,16 @@ export default class Dashboard extends React.Component {
           <div>
             <div className="modal"></div>
             <div className="modal-container">
-              <div className="modal-header">Add Task</div>
+              <div className="modal-header">Task</div>
               <div>
                 <div className="modal-inputs">
-                  <input onChange={(e)=> {this.setState({ title : e.target.value})}} placeholder="Task title" className="inp-title" type="text" />
-                  <textarea onChange={(e)=> {this.setState({ description : e.target.value})}} rows="3" placeholder="description" className="inp-description"></textarea>
+                  <input onChange={(e) => { this.setState({ title: e.target.value }) }} placeholder="Task title" className="inp-title" type="text" value={this.state.title} />
+                  <textarea onChange={(e) => { this.setState({ description: e.target.value }) }} rows="3" placeholder="description" className="inp-description" value={this.state.description}></textarea>
                 </div>
               </div>
               <div className="modal-btns">
-                <button onClick={() => { this.setState({showModal: false}) }} >cancel</button>
-                <button onClick={this.addTask} className="done-btn">done</button>
+                <button onClick={() => { this.setState({ showModal: false }) }} >cancel</button>
+                <button onClick={ this.state.istaskEdit ? this.editTask : this.addTask} className="done-btn">done</button>
               </div>
             </div>
           </div>
@@ -94,7 +117,7 @@ export default class Dashboard extends React.Component {
         <div className="board">
           {this.state.payload.map((each, k) => {
             return (
-              <TaskList deleteTask={this.deleteTask.bind(this.idx, k)} addTask={this.showModal.bind(this, k)} key={k} title={each["list-name"]} card={each.card} />
+              <TaskList editTask={this.showModal.bind(this.idx, k)} deleteTask={this.deleteTask.bind(this.idx, k)} addTask={this.showModal.bind(this, k)} key={k} title={each["list-name"]} card={each.card} />
             )
           })}
         </div>
