@@ -1,0 +1,53 @@
+.card {
+  text-align: left;
+  padding: 16px;
+  border-radius: 5px;
+  background-color: #ffffff;
+  box-shadow: 0 5px 25px 5px #E0E0E0;
+  margin-top : 16px;
+}
+
+.card-number {
+  color : #1890ff;
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.card-head-content {
+  border-bottom: #E0E0E0 solid 1px;
+  padding-bottom: 8px;
+}
+
+.card-date {
+  float: right;
+
+  color: #1890ff;
+}
+
+.card-description {
+  color : #757575;
+  margin: 8px;
+  font-size: 0.9em;
+}
+
+.card-operations {
+  text-align: right
+}
+
+.opt-btn {
+  margin-top: 16px;
+  padding: 3px 15px;
+  color: #ffffff;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.edit-btn {
+  background-color: #1890ff;
+}
+
+.delete-btn {
+  background-color: #f5222d;
+}
