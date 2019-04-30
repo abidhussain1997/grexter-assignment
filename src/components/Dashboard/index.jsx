@@ -1,6 +1,9 @@
 import React from "react";
-import TaskList from "../commons/card"
-import "./style.css"
+import TaskList from "../commons/card";
+import "./style.css";
+import  Modal from  "../commons/modal";
+import  AlertBox from  "../commons/alert";
+
 
 export default class Dashboard extends React.Component {
 
@@ -8,6 +11,7 @@ export default class Dashboard extends React.Component {
     super(props);
     this.state = {
       showModal: false,
+      showConfirmation: false,
       description: "",
       title: "",
       listidx: null,
@@ -48,11 +52,12 @@ export default class Dashboard extends React.Component {
     })
   }
 
-  deleteTask = (listidx, taskidx) => {
+  deleteTask = () => {
     let data = this.state.payload;
-    data[listidx].card.splice(taskidx, 1);
+    data[this.state.listidx].card.splice(this.state.cardidx, 1);
     this.setState({
       payload: data,
+      showConfirmation: false,
     })
   }
 
@@ -67,60 +72,65 @@ export default class Dashboard extends React.Component {
     })
   }
 
-  showModal = (listidx, taskidx) => {
-    if(isNaN(taskidx)){
+  showModal = (listidx, cardidx) => {
+    if (isNaN(cardidx)) {
       this.setState({
         title: "",
         description: "",
         showModal: true,
         listidx: listidx,
-        istaskEdit : false,
+        istaskEdit: false,
       })
     } else {
       this.setState({
-        title: this.state.payload[listidx].card[taskidx].title,
-        description: this.state.payload[listidx].card[taskidx].description,
+        title: this.state.payload[listidx].card[cardidx].title,
+        description: this.state.payload[listidx].card[cardidx].description,
         showModal: true,
-        listidx : listidx,
-        cardidx: taskidx,
-        istaskEdit : true,
+        listidx: listidx,
+        cardidx: cardidx,
+        istaskEdit: true,
       })
     }
 
+  }
+
+  showConfirmation = (listidx, cardidx) => {
+    this.setState({
+      cardidx,
+      listidx,
+      showConfirmation: true,
+    })
   }
 
 
   render() {
     return (
       <div className="container">
-        {(this.state.showModal) ?
-          <div>
-            <div className="modal"></div>
-            <div className="modal-container">
-              <div className="modal-header">Task</div>
-              <div>
-                <div className="modal-inputs">
-                  <input onChange={(e) => { this.setState({ title: e.target.value }) }} placeholder="Task title" className="inp-title" type="text" value={this.state.title} />
-                  <textarea onChange={(e) => { this.setState({ description: e.target.value }) }} rows="3" placeholder="description" className="inp-description" value={this.state.description}></textarea>
-                </div>
-              </div>
-              <div className="modal-btns">
-                <button onClick={() => { this.setState({ showModal: false }) }} >cancel</button>
-                <button onClick={ this.state.istaskEdit ? this.editTask : this.addTask} className="done-btn">done</button>
-              </div>
-            </div>
-          </div>
+
+        {this.state.showConfirmation ?
+          <AlertBox deleteTask={this.deleteTask} hideAlert={ () => {this.setState({ showConfirmation: false }) }}/>
           :
           null
         }
+
+        {(this.state.showModal) ?
+          <Modal addTask={this.addTask} editTask={this.editTask} 
+            onChangeDescription={(e) => this.setState({ description: e.target.value })} onChangeTitle={(e) => this.setState({ title: e.target.value })} 
+            showModal={ () => {this.setState({showModal : false})}}  istaskEdit={this.state.istaskEdit} title={this.state.title} description={this.state.description} />
+          :
+          null
+        }
+
         <div className="board-title">Weekly Planner</div>
         <div className="board">
           {this.state.payload.map((each, k) => {
             return (
-              <TaskList editTask={this.showModal.bind(this.idx, k)} deleteTask={this.deleteTask.bind(this.idx, k)} addTask={this.showModal.bind(this, k)} key={k} title={each["list-name"]} card={each.card} />
+              <TaskList editTask={this.showModal.bind(this.idx, k)} deleteTask={this.showConfirmation.bind(this.idx, k)} addTask={this.showModal.bind(this, k)} key={k} title={each["list-name"]} card={each.card} />
             )
           })}
         </div>
+
+
       </div>
     )
   }
