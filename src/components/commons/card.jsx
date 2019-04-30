@@ -12,7 +12,7 @@ export const Card = (props) => {
       <div className="card-description"> {props.description} </div>
       <div className="card-operations">
         <button className="edit-btn opt-btn">Edit</button>
-        <button className="delete-btn opt-btn">delete</button>
+        <button onClick={props.deleteTask} className="delete-btn opt-btn">delete</button>
       </div>
     </div>
   );
@@ -23,11 +23,11 @@ export default (props) => (
     <div className="task-list">
       {props.card.map((each, k) => {
         return (
-          <Card key={k} number={each.number} title={each.title} date={each.date} description={each.description} />
+          <Card deleteTask={props.deleteTask.bind(this, k)} key={k} number={k + 1} title={each.title} date={each.date} description={each.description} />
         )
       })}
     </div>
-    <div onClick={props.addTask} className="task-add">
+    <div onClick={props.addTask} idx={props.idx} className="task-add">
       Add Task
     </div>
   </div>

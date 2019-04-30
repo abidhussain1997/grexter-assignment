@@ -12,49 +12,16 @@ export default class Dashboard extends React.Component {
         {
           "list-name": "All",
 
-          "card": [{
-            "number": 1,
-            "title": "In my mind",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          }, {
-            "number": 2,
-            "title": "In my head",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          },
-          {
-            "number": 3,
-            "title": "In your mind",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          }]
+          "card": []
         },
         {
           "list-name": "To-Do",
 
-          "card": [{
-            "number": 1,
-            "title": "In my head",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          }, {
-            "number": 2,
-            "title": "In your head",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          },
-          {
-            "number": 3,
-            "title": "In my mind",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          }]
+          "card": []
         },
         {
           "list-name": "Doing",
           "card": [{
-            "number": 1,
             "title": "In my mind",
             "date": "30/18/97",
             "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
@@ -62,31 +29,43 @@ export default class Dashboard extends React.Component {
         },
         {
           "list-name": "Done",
-          "card": [{
-            "number": 1,
-            "title": "In my mind",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          }, {
-            "number": 2,
-            "title": "In my mind",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          },
-          {
-            "number": 3,
-            "title": "In my mind",
-            "date": "30/18/97",
-            "description": "In my mind, in my head, this is where we all came from, The dreams we have, the love we share, this is what we waiting for"
-          }]
+          "card": []
         },
       ]
     }
   }
 
-  addTask = () => {
-    
+  addTask = async (e) => {
+    let idx = await this.state.idx;
+    let data = {
+      "number": this.state.payload[idx].card.length + 1,
+      "title": this.state.title,
+      "date": new Date().toJSON().slice(0,10).replace(/-/g,'/'),
+      "description": this.state.description
+    }
+    let d = await this.state.payload;
+    d[idx].card.push(data);
+    this.setState({
+      payload : d,
+      showModal: false
+    })
   }
+
+  deleteTask = (listidx, taskidx) => {
+    let data = this.state.payload;
+    data[listidx].card.splice(taskidx, 1);
+    this.setState({
+      payload: data,
+    })
+  }
+
+  showModal = (idx, e) => {
+    this.setState({
+      showModal : true,
+      idx
+    })
+  }
+  
 
   render() {
     return (
@@ -98,13 +77,13 @@ export default class Dashboard extends React.Component {
               <div className="modal-header">Add Task</div>
               <div>
                 <div className="modal-inputs">
-                  <input placeholder="Task title" className="inp-title" type="text" />
-                  <textarea rows="3" placeholder="description" className="inp-description"></textarea>
+                  <input onChange={(e)=> {this.setState({ title : e.target.value})}} placeholder="Task title" className="inp-title" type="text" />
+                  <textarea onChange={(e)=> {this.setState({ description : e.target.value})}} rows="3" placeholder="description" className="inp-description"></textarea>
                 </div>
               </div>
               <div className="modal-btns">
-                <button>cancel</button>
-                <button className="done-btn">done</button>
+                <button onClick={() => { this.setState({showModal: false}) }} >cancel</button>
+                <button onClick={this.addTask} className="done-btn">done</button>
               </div>
             </div>
           </div>
@@ -115,7 +94,7 @@ export default class Dashboard extends React.Component {
         <div className="board">
           {this.state.payload.map((each, k) => {
             return (
-              <TaskList addTask={this.addTask} key={k} title={each["list-name"]} card={each.card} />
+              <TaskList deleteTask={this.deleteTask.bind(this.idx, k)} addTask={this.showModal.bind(this, k)} key={k} title={each["list-name"]} card={each.card} />
             )
           })}
         </div>
