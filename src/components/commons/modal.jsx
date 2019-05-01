@@ -1,10 +1,11 @@
-import React from "react"
+import React from "react";
+import "./style.css";
 
 export default (props) => (
   <div>
     <div className="addFilter"></div>
     <div className="modal-container">
-      <div className="modal-header">{props.istaskEdit ? "Edit Task" : "Add Task"} </div>
+      <div className="modal-header">{props.istaskEdit ? "Edit Task" : "Add Task" } </div>
       <div>
         <div className="modal-inputs">
           <input onChange={(e) => { props.onChangeTitle(e) }} placeholder="Task title" className="inp-title" type="text" value={props.title} />
@@ -12,8 +13,8 @@ export default (props) => (
         </div>
       </div>
       <div className="modal-btns">
-        <button onClick={props.showModal}>Cancel</button>
-        <button onClick={props.istaskEdit ? props.editTask : props.addTask} className="done-btn">Done</button>
+        <button onClick={props.hideModal}>Cancel</button>
+        <button disabled={!props.title || !props.description} onClick={props.istaskEdit ? props.editTask : props.addTask} className="done-btn">Done</button>
       </div>
     </div>
   </div>

@@ -14,8 +14,8 @@ export default class Dashboard extends React.Component {
       showConfirmation: false,
       description: "",
       title: "",
-      listidx: null,
-      cardidx: null,
+      listIdx: null,
+      cardIdx: null,
       payload: [
         {
           "list-name": "All",
@@ -37,8 +37,19 @@ export default class Dashboard extends React.Component {
     }
   }
 
+  componentWillMount = () => {
+    // Populate states from localstorage
+    let payload = JSON.parse(localStorage.getItem("payload"));
+    if(payload != null){
+      this.setState({
+        payload
+      })
+    }
+  }
+
+  // Method to add new task in a list
   addTask = async (e) => {
-    let idx = await this.state.listidx;
+    let idx = await this.state.listIdx;
     let data = {
       "title": this.state.title,
       "date": new Date().toJSON().slice(0, 10).replace(/-/g, '/'),
@@ -46,58 +57,68 @@ export default class Dashboard extends React.Component {
     }
     let payload = await this.state.payload;
     payload[idx].card.push(data);
-    this.setState({
+    await this.setState({
       payload,
       showModal: false
     })
-  }
 
-  deleteTask = () => {
+    localStorage.setItem("payload", JSON.stringify(this.state.payload))
+  }
+ 
+  // Method to delete a task from the list 
+  deleteTask = async () => {
     let data = this.state.payload;
-    data[this.state.listidx].card.splice(this.state.cardidx, 1);
-    this.setState({
+    data[this.state.listIdx].card.splice(this.state.cardIdx, 1);
+    await this.setState({
       payload: data,
       showConfirmation: false,
     })
+    localStorage.setItem("payload", JSON.stringify(this.state.payload))
   }
 
+  // Method to edit a task
   editTask = async () => {
     let data = await this.state.payload;
-    data[this.state.listidx].card[this.state.cardidx].title = this.state.title;
-    data[this.state.listidx].card[this.state.cardidx].description = this.state.description;
+    data[this.state.listIdx].card[this.state.cardIdx].title = this.state.title;
+    data[this.state.listIdx].card[this.state.cardIdx].description = this.state.description;
 
-    this.setState({
+    await this.setState({
       payload: data,
       showModal: false
     })
+    localStorage.setItem("payload", JSON.stringify(this.state.payload))
   }
 
-  showModal = (listidx, cardidx) => {
-    if (isNaN(cardidx)) {
+  // show Add/Edit Modal
+  showModal = (listIdx, cardIdx) => {
+    // Open Modal to Add Task
+    if (isNaN(cardIdx)) {
       this.setState({
         title: "",
         description: "",
         showModal: true,
-        listidx: listidx,
+        listIdx: listIdx,
         istaskEdit: false,
       })
     } else {
+      // Open Modal to Edit Task 
       this.setState({
-        title: this.state.payload[listidx].card[cardidx].title,
-        description: this.state.payload[listidx].card[cardidx].description,
+        title: this.state.payload[listIdx].card[cardIdx].title,
+        description: this.state.payload[listIdx].card[cardIdx].description,
         showModal: true,
-        listidx: listidx,
-        cardidx: cardidx,
+        listIdx: listIdx,
+        cardIdx: cardIdx,
         istaskEdit: true,
       })
     }
 
   }
 
-  showConfirmation = (listidx, cardidx) => {
+  // show Alert Box on delete task
+  showConfirmation = (listIdx, cardIdx) => {
     this.setState({
-      cardidx,
-      listidx,
+      cardIdx,
+      listIdx,
       showConfirmation: true,
     })
   }
@@ -106,7 +127,6 @@ export default class Dashboard extends React.Component {
   render() {
     return (
       <div className="container">
-
         {this.state.showConfirmation ?
           <AlertBox deleteTask={this.deleteTask} hideAlert={ () => {this.setState({ showConfirmation: false }) }}/>
           :
@@ -116,7 +136,7 @@ export default class Dashboard extends React.Component {
         {(this.state.showModal) ?
           <Modal addTask={this.addTask} editTask={this.editTask} 
             onChangeDescription={(e) => this.setState({ description: e.target.value })} onChangeTitle={(e) => this.setState({ title: e.target.value })} 
-            showModal={ () => {this.setState({showModal : false})}}  istaskEdit={this.state.istaskEdit} title={this.state.title} description={this.state.description} />
+            hideModal={ () => {this.setState({showModal : false})}}  istaskEdit={this.state.istaskEdit} title={this.state.title} description={this.state.description} />
           :
           null
         }
@@ -129,7 +149,6 @@ export default class Dashboard extends React.Component {
             )
           })}
         </div>
-
 
       </div>
     )

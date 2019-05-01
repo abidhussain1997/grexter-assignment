@@ -113,10 +113,11 @@ input, textarea {
   padding: 10px 20px;
 }
 .modal-header {
-  padding: 10px;
+  padding: 16px;
   text-align: center;
   font-size: 1.5em;
   border-bottom: #E0E0E0 solid 1px;
+  margin-bottom: 16px;
 }
 
 input:hover,

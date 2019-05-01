@@ -1,5 +1,5 @@
 import React from "react";
-
+import "./style.css";
 export default (props) => (
   <div className="confirm">
     <div className="addFilter"></div>
