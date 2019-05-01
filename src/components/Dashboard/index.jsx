@@ -101,7 +101,7 @@ export default class Dashboard extends React.Component {
         istaskEdit: false,
       })
     } else {
-      // Open Modal to Edit Task 
+      // Open modal to edit task 
       this.setState({
         title: this.state.payload[listIdx].card[cardIdx].title,
         description: this.state.payload[listIdx].card[cardIdx].description,
@@ -114,7 +114,7 @@ export default class Dashboard extends React.Component {
 
   }
 
-  // show Alert Box on delete task
+  // Show alert box on delete task
   showConfirmation = (listIdx, cardIdx) => {
     this.setState({
       cardIdx,
